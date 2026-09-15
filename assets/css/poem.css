@@ -1,0 +1,230 @@
+/* ============================================================================
+   poem.css — «دو چشمانت».
+
+   This is the original page's stylesheet, kept rather than replaced: the moon
+   as the play button, its craters and rabbit, the ripple rings, the cats in
+   the corners, the gold-to-rose title, the stanza ornament. The changes are
+   the ones needed to make it a room instead of a document — its sky now comes
+   from the shell, its glass is a little less transparent so the verse holds
+   contrast, and the stanzas are grouped as stanzas rather than loose lines.
+   ========================================================================== */
+
+.poem-room {
+  max-width: 62rem;
+  margin: 0 auto;
+  display: grid;
+  gap: clamp(2rem, 6vh, 3.6rem);
+  justify-items: center;
+  text-align: center;
+}
+
+/* ---- the moon ----------------------------------------------------------- */
+
+.poem-hero {
+  position: relative;
+  width: 100%;
+  display: grid;
+  justify-items: center;
+  gap: 1.1rem;
+  padding: clamp(1rem, 4vh, 2.5rem) 0 0;
+}
+
+.poem-cat {
+  position: absolute;
+  width: clamp(54px, 8vw, 96px);
+  opacity: 0.5;
+  filter: drop-shadow(0 0 10px rgba(6, 8, 20, 0.4));
+  pointer-events: none;
+}
+.poem-cat--left { left: clamp(0rem, 2vw, 3rem); bottom: -1rem; }
+.poem-cat--right { right: clamp(0rem, 2vw, 3rem); bottom: 2.5rem; transform: scaleX(-1); }
+.cat-shape { fill: var(--ink-600); stroke: var(--ink-600); }
+
+.moon-player {
+  position: relative;
+  width: clamp(11rem, 26vw, 18rem);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}
+.moon-svg { width: 100%; height: 100%; animation: breathe 6s ease-in-out infinite; }
+@keyframes breathe {
+  0%, 100% { filter: drop-shadow(0 0 18px rgba(232, 200, 119, 0.35)); }
+  50% { filter: drop-shadow(0 0 34px rgba(232, 200, 119, 0.55)); }
+}
+.moon-disc { transition: transform 0.4s var(--ease); }
+.moon-player:hover .moon-disc { transform: scale(1.015); transform-origin: 200px 200px; }
+.crater { fill: var(--ink-700); opacity: 0.16; }
+.rabbit { fill: var(--ink-900); opacity: 0.55; }
+
+.play-icon {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+.play-icon svg {
+  grid-area: 1 / 1;
+  width: clamp(26px, 4vw, 40px);
+  height: clamp(26px, 4vw, 40px);
+  fill: var(--ink-900);
+  opacity: 0;
+  transition: opacity 0.25s var(--ease);
+  filter: drop-shadow(0 0 6px rgba(251, 232, 184, 0.6));
+}
+.icon-play { opacity: 0.8; }
+.moon-player[aria-pressed="true"] .icon-play { opacity: 0; }
+.moon-player[aria-pressed="true"] .icon-pause { opacity: 0.8; }
+.moon-player:hover .icon-play { opacity: 1; }
+
+.ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  opacity: 0;
+}
+.moon-player[aria-pressed="true"] .ring--1 { animation: ripple 2.6s ease-out infinite; }
+.moon-player[aria-pressed="true"] .ring--2 { animation: ripple 2.6s ease-out infinite 1.3s; }
+@keyframes ripple {
+  0% { transform: scale(1); opacity: 0.55; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+.player-caption {
+  font-size: var(--step--1);
+  color: var(--fg-faint);
+  transition: color 0.3s var(--ease);
+}
+.poem-room.is-listening .player-caption { color: var(--gold); }
+
+.download-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--fg-soft);
+  font-size: var(--step--1);
+  text-decoration: none;
+  transition: border-color 0.25s var(--ease), color 0.25s var(--ease), transform 0.25s var(--ease);
+}
+.download-link:hover { border-color: var(--gold); color: var(--gold-bright); transform: translateY(-1px); }
+
+.poem-title { margin-top: 0.4rem; }
+.poem-title h1 {
+  font-family: var(--font-fa-display);
+  font-weight: 700;
+  font-size: clamp(2.4rem, 7vw, 4.2rem);
+  line-height: 1.35;
+  margin-bottom: 0.4rem;
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold) 60%, var(--rose));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.poem-sub {
+  max-width: 34ch;
+  margin: 0 auto;
+  font-size: var(--step-0);
+  line-height: 1.95;
+  color: var(--fg-soft);
+}
+
+/* ---- the verse ---------------------------------------------------------- */
+
+.poem-card {
+  width: 100%;
+  max-width: 40rem;
+  padding: clamp(1.6rem, 5vw, 3rem);
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: rgba(14, 19, 46, 0.66);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.6);
+}
+
+.poem-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.1rem;
+  margin-bottom: 1.8rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--fg-soft);
+  font-size: 0.82rem;
+  transition: border-color 0.25s var(--ease), color 0.25s var(--ease), background 0.25s var(--ease);
+}
+.copy-btn:hover { border-color: var(--gold); color: var(--gold-bright); }
+.copy-icons { display: grid; }
+.copy-icons .ico { grid-area: 1 / 1; width: 15px; height: 15px; }
+.copy-icons .ico:last-child { opacity: 0; }
+.copy-btn.is-copied { border-color: var(--gold); color: var(--gold-bright); background: var(--gold-dim); }
+.copy-btn.is-copied .ico:first-child { opacity: 0; }
+.copy-btn.is-copied .ico:last-child { opacity: 1; }
+
+.poem {
+  font-family: var(--font-poem);
+  font-weight: 500;
+  font-size: clamp(1.1rem, 2.6vw, 1.45rem);
+  line-height: 2.3;
+  color: var(--cream);
+  text-align: center;
+}
+.stanza { display: grid; }
+.verse {
+  transition: color 0.25s var(--ease);
+  text-wrap: balance;
+}
+.verse:hover { color: var(--gold-bright); }
+
+.stanza-rule {
+  display: flex;
+  justify-content: center;
+  margin: 1.1rem 0;
+  opacity: 0.5;
+}
+.stanza-rule .ornament circle { fill: var(--rose); }
+
+/* ---- footer ------------------------------------------------------------- */
+
+.poem-foot {
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  color: var(--fg-faint);
+}
+.poem-foot__moon .ico {
+  width: 1.6rem; height: 1.6rem;
+  color: var(--gold);
+  opacity: 0.5;
+  stroke-width: 1.2;
+}
+
+@media (max-width: 640px) {
+  .poem-cat { opacity: 0.3; width: 52px; }
+  .poem-cat--left { left: 0; bottom: -0.5rem; }
+  .poem-cat--right { right: 0; bottom: 3rem; }
+  .poem { line-height: 2.1; }
+  .poem-card { border-radius: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moon-svg, .ring, .moon-disc, .verse { animation: none !important; }
+}

@@ -1,0 +1,225 @@
+/* ============================================================================
+   letter.css — paper on a desk.
+
+   The page itself carries the decoration, so the room around it does almost
+   nothing: a warm pool of light, a soft shadow under the sheet, and controls
+   that step out of the way. No panel, no chrome, no navigation bar across the
+   handwriting.
+   ========================================================================== */
+
+/* ---- the envelope ------------------------------------------------------- */
+
+.letter-open {
+  display: grid;
+  place-items: center;
+  min-height: calc(100svh - 12rem);
+}
+
+.envelope {
+  display: grid;
+  justify-items: center;
+  gap: 1.4rem;
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  animation: env-in 700ms var(--ease) both;
+}
+@keyframes env-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.envelope-art {
+  display: block;
+  width: min(22rem, 70vw);
+  filter: drop-shadow(0 26px 40px rgba(0, 0, 0, 0.55));
+}
+.envelope-art svg { width: 100%; height: auto; overflow: visible; }
+
+.env-body { fill: var(--paper); stroke: var(--paper-shade); stroke-width: 1.2; }
+.env-fold { fill: none; stroke: var(--paper-shade); stroke-width: 1.2; opacity: 0.7; }
+.env-flap {
+  fill: #e6d8bd;
+  stroke: var(--paper-shade);
+  stroke-width: 1.2;
+  transform-origin: 110px 26px;
+  transition: transform 620ms var(--ease);
+}
+.env-heart { fill: var(--rose); opacity: 0.9; transition: opacity var(--t-mid) var(--ease); }
+
+.envelope:hover .env-flap { transform: rotateX(18deg); }
+.envelope:hover .env-heart { opacity: 1; }
+.envelope.is-open .env-flap { transform: rotateX(180deg); }
+.envelope.is-open .env-heart { opacity: 0; }
+.envelope.is-open .envelope-art { transform: translateY(-8px); transition: transform 620ms var(--ease); }
+
+.envelope-hint {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  letter-spacing: 0.04em;
+  color: var(--fg-faint);
+  transition: color var(--t-fast) var(--ease);
+}
+.envelope:hover .envelope-hint { color: var(--gold-bright); }
+
+/* ---- the reader --------------------------------------------------------- */
+
+.letter-room {
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  gap: 1rem;
+  height: calc(100svh - (2 * var(--pad-y)));
+  max-width: 62rem;
+  margin: 0 auto;
+  opacity: 0;
+  transition: opacity 520ms var(--ease);
+}
+.letter-room.is-ready { opacity: 1; }
+body.has-mini .letter-room { height: calc(100svh - (2 * var(--pad-y)) - var(--mini-room)); }
+
+.desk {
+  position: relative;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+}
+
+.viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  perspective: 1600px;
+  touch-action: none;
+  cursor: zoom-in;
+}
+.viewport.is-zoomed { cursor: grab; }
+.pane.is-dragging { cursor: grabbing; }
+
+.pane {
+  /* absolutely filled rather than grid-sized: the sheet needs a definite
+     height for the page's max-height to resolve against, otherwise the image
+     sizes itself and spills out of the room */
+  position: absolute;
+  inset: 0;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.sheet {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+.page-img {
+  /* absolute + auto margins: the one centring method where a percentage
+     max-height reliably resolves, so the page always fits the room and the
+     shadow stays tight to the paper edge */
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  border-radius: 2px;
+  box-shadow: var(--shadow-paper);
+  background: var(--paper);
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+
+.page-img.is-missing { display: none; }
+.page-fallback {
+  padding: 3rem 2rem;
+  max-width: 24rem;
+  text-align: center;
+  color: var(--fg-soft);
+  background: rgba(12, 17, 40, 0.6);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+}
+
+/* the turn: paper lifting away, not a card flipping over */
+.sheet.is-leaving-next { animation: leave-next 500ms var(--ease) both; }
+.sheet.is-entering-next { animation: enter-next 500ms var(--ease) both; }
+.sheet.is-leaving-prev { animation: leave-prev 500ms var(--ease) both; }
+.sheet.is-entering-prev { animation: enter-prev 500ms var(--ease) both; }
+.sheet.is-fading-out { animation: sheet-out 180ms linear both; }
+.sheet.is-fading-in { animation: sheet-in 180ms linear both; }
+
+@keyframes leave-next {
+  from { transform: rotateY(0deg) translateX(0); opacity: 1; }
+  to { transform: rotateY(-26deg) translateX(-8%); opacity: 0; }
+}
+@keyframes enter-next {
+  from { transform: rotateY(22deg) translateX(7%); opacity: 0; }
+  to { transform: rotateY(0deg) translateX(0); opacity: 1; }
+}
+@keyframes leave-prev {
+  from { transform: rotateY(0deg) translateX(0); opacity: 1; }
+  to { transform: rotateY(26deg) translateX(8%); opacity: 0; }
+}
+@keyframes enter-prev {
+  from { transform: rotateY(-22deg) translateX(-7%); opacity: 0; }
+  to { transform: rotateY(0deg) translateX(0); opacity: 1; }
+}
+@keyframes sheet-out { to { opacity: 0; } }
+@keyframes sheet-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* ---- controls ----------------------------------------------------------- */
+
+.letter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.letter-bar__nav,
+.letter-bar__tools {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.letter-bar .ctl { color: rgba(244, 236, 217, 0.6); }
+.letter-bar .ctl:hover:not(:disabled) { color: var(--gold-bright); }
+
+.page-count {
+  min-width: 3.4rem;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  color: var(--cream);
+  letter-spacing: 0.12em;
+}
+.zoom-label {
+  min-width: 3rem;
+  text-align: center;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--fg-ghost);
+  font-variant-numeric: tabular-nums;
+}
+
+.letter-tip {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--fg-ghost);
+}
+
+@media (max-width: 720px) {
+  .letter-room { gap: 0.6rem; }
+  .letter-bar { justify-content: center; gap: 0.5rem 1.2rem; }
+  .letter-bar__tools .ctl-text span { display: none; }
+  .letter-tip__keys { display: none; }
+}
+
+@media (hover: none) {
+  .letter-tip { display: none; }
+}

@@ -1,0 +1,135 @@
+/* ============================================================================
+   memories.css — the board.
+
+   Two states, both designed: pinned photographs, and the honest empty one.
+   The empty state is not an apology or a placeholder graphic — it is three
+   waiting pin-slots and two sentences, so the room reads as prepared rather
+   than unfinished.
+   ========================================================================== */
+
+.board-room {
+  position: relative;
+  max-width: 68rem;
+  margin: 0 auto;
+  display: grid;
+  gap: clamp(2rem, 6vh, 3.4rem);
+}
+
+.board-head { display: grid; gap: 0.7rem; justify-items: center; text-align: center; }
+.board-title {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: var(--step-3);
+  line-height: 1.15;
+  max-width: 20ch;
+  color: var(--cream);
+}
+
+/* ---- pinned ------------------------------------------------------------- */
+
+.board-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr));
+  gap: clamp(1.4rem, 3vw, 2.6rem);
+}
+
+.memory {
+  position: relative;
+  display: grid;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.85rem 0.85rem 1.1rem;
+  background: linear-gradient(180deg, #f6eeda, #e9dcc0);
+  border-radius: 2px;
+  box-shadow: var(--shadow-paper);
+  transform: rotate(var(--tilt, 0deg));
+  transition: transform var(--t-mid) var(--ease), box-shadow var(--t-mid) var(--ease);
+}
+.memory:hover, .memory:focus-visible {
+  transform: rotate(0deg) translateY(-4px);
+  box-shadow: 0 34px 70px -28px rgba(0, 0, 0, 0.9);
+}
+
+.memory-pin {
+  position: absolute;
+  top: -0.45rem; left: 50%;
+  width: 0.85rem; height: 0.85rem;
+  margin-left: -0.425rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 36% 32%, var(--gold-bright), var(--gold-deep));
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.45);
+}
+
+.memory-frame {
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #d8c9aa;
+}
+.memory-photo { width: 100%; height: 100%; object-fit: cover; }
+.memory.is-missing .memory-frame::after {
+  content: '';
+  display: block;
+  height: 100%;
+  background: repeating-linear-gradient(45deg, #d8c9aa 0 8px, #cfbf9e 8px 16px);
+}
+
+.memory-caption {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  font-size: 0.82rem;
+  color: #4a3d2c;
+  text-align: left;
+}
+.memory-date { color: #8a6a3a; flex: none; }
+
+/* ---- waiting ------------------------------------------------------------ */
+
+.board-empty {
+  display: grid;
+  gap: 2.4rem;
+  justify-items: center;
+  padding: clamp(2rem, 6vh, 4rem) 0;
+  text-align: center;
+}
+
+.board-slots { display: flex; gap: clamp(1rem, 4vw, 2.4rem); }
+.slot {
+  position: relative;
+  width: clamp(5.5rem, 16vw, 8.5rem);
+  aspect-ratio: 4 / 5;
+  border: 1px dashed var(--line);
+  border-radius: 2px;
+  background: rgba(244, 236, 217, 0.025);
+  opacity: 0.75;
+}
+.slot::before {
+  content: '';
+  position: absolute;
+  top: -0.4rem; left: 50%;
+  width: 0.7rem; height: 0.7rem;
+  margin-left: -0.35rem;
+  border-radius: 50%;
+  background: var(--gold);
+  opacity: 0.45;
+}
+.slot:nth-child(1) { transform: rotate(-1.6deg); }
+.slot:nth-child(2) { transform: rotate(0.8deg); }
+.slot:nth-child(3) { transform: rotate(-0.6deg); }
+
+.board-empty__text { display: grid; gap: 0.8rem; max-width: 42ch; }
+.board-empty__text p { color: var(--fg-faint); font-size: var(--step-0); line-height: 1.75; }
+
+.board-sprig {
+  display: block;
+  width: 3rem; height: 3rem;
+  margin: 0 auto;
+  color: var(--gold);
+  opacity: 0.28;
+}
+
+@media (max-width: 600px) {
+  .board-slots { gap: 0.8rem; }
+  .board-empty { gap: 1.8rem; }
+}

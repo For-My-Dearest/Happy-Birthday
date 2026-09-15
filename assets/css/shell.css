@@ -1,0 +1,390 @@
+/* ============================================================================
+   shell.css — the parts of the house that are always there.
+
+   The sky, the light in each room, the way one room becomes another, the back
+   way out, and the small player that follows the music around.
+   ========================================================================== */
+
+/* ---- sky ---------------------------------------------------------------- */
+
+.sky {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity var(--t-slow) var(--ease);
+}
+.star {
+  position: absolute;
+  width: 2px; height: 2px;
+  border-radius: 50%;
+  background: var(--gold-bright);
+  opacity: 0.45;
+  animation: twinkle 4s ease-in-out infinite;
+}
+.star--warm { background: var(--rose); opacity: 0.35; }
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.12; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.35); }
+}
+
+/* the sky dims in the rooms where paper or lamplight should dominate */
+[data-room="letter"] .sky { opacity: 0.18; }
+[data-room="memories"] .sky { opacity: 0.5; }
+[data-room="secret"] .sky { opacity: 0.3; }
+[data-room="poem"] .sky { opacity: 1; }
+
+/* ---- atmosphere --------------------------------------------------------- */
+
+.atmos { position: fixed; inset: 0; z-index: -1; }
+.atmos-layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--t-slow) var(--ease-soft);
+}
+html[data-room="hub"] .atmos-layer[data-for="hub"],
+html[data-room="letter"] .atmos-layer[data-for="letter"],
+html[data-room="playlist"] .atmos-layer[data-for="playlist"],
+html[data-room="poem"] .atmos-layer[data-for="poem"],
+html[data-room="memories"] .atmos-layer[data-for="memories"],
+html[data-room="secret"] .atmos-layer[data-for="secret"] { opacity: 1; }
+
+.atmos-layer[data-for="hub"] {
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 46%, rgba(232, 200, 119, 0.09), transparent 62%),
+    linear-gradient(180deg, var(--ink-900) 0%, var(--ink-700) 55%, var(--ink-600) 100%);
+}
+/* letter: the night is still outside, but this room has a lamp in it */
+.atmos-layer[data-for="letter"] {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 28%, rgba(232, 190, 130, 0.16), transparent 70%),
+    linear-gradient(180deg, #120d18 0%, #1a1420 45%, #241a1c 100%);
+}
+.atmos-layer[data-for="playlist"] {
+  background:
+    radial-gradient(ellipse 60% 45% at 28% 72%, rgba(232, 200, 119, 0.12), transparent 66%),
+    radial-gradient(ellipse 50% 40% at 82% 12%, rgba(221, 154, 172, 0.08), transparent 70%),
+    linear-gradient(180deg, var(--ink-900) 0%, #0e1230 60%, #151a45 100%);
+}
+.atmos-layer[data-for="poem"] {
+  background:
+    radial-gradient(ellipse 60% 40% at 78% 8%, rgba(232, 200, 119, 0.1), transparent 60%),
+    linear-gradient(180deg, var(--ink-900) 0%, var(--ink-700) 45%, var(--ink-600) 78%, var(--ink-500) 100%);
+}
+.atmos-layer[data-for="memories"] {
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(221, 154, 172, 0.09), transparent 62%),
+    linear-gradient(180deg, #0a0f24 0%, #141a3c 70%, #1b2149 100%);
+}
+.atmos-layer[data-for="secret"] {
+  background:
+    radial-gradient(ellipse 34% 60% at 50% 34%, rgba(150, 175, 230, 0.09), transparent 70%),
+    linear-gradient(180deg, var(--ink-950) 0%, #06091a 60%, #04060f 100%);
+}
+
+/* ---- stage -------------------------------------------------------------- */
+
+.stage {
+  position: relative;
+  z-index: 1;
+  /* auto margins centre a short room and collapse to zero on a tall one, so a
+     large screen never looks empty and a long room never loses its top */
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  /* rooms that need exact height math (the letter) read this back */
+  --pad-y: clamp(3.4rem, 7vh, 5rem);
+  --mini-room: 4.6rem;
+  padding: var(--pad-y) var(--pad-page);
+  transition: opacity var(--t-mid) var(--ease), transform var(--t-mid) var(--ease);
+}
+.stage > * { width: 100%; margin-block: auto; }
+.stage:focus { outline: none; }
+.stage.is-leaving { opacity: 0; transform: translateY(8px); }
+.stage.is-entering { opacity: 0; transform: translateY(-8px); transition: none; }
+
+body.has-mini .stage { padding-bottom: calc(var(--pad-y) + var(--mini-room) + env(safe-area-inset-bottom)); }
+
+/* ---- opening ------------------------------------------------------------ */
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  display: grid;
+  place-items: center;
+  background: var(--ink-900);
+  transition: opacity 500ms var(--ease);
+}
+body.is-opening { overflow: hidden; }
+.intro.is-out { opacity: 0; pointer-events: none; }
+
+.intro-moon {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: clamp(150px, 26vw, 250px);
+  aspect-ratio: 1;
+  margin: -1px 0 0 -1px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 42% 40%, var(--gold-bright), var(--gold) 55%, var(--gold-deep));
+  opacity: 0;
+  transform: translate(-50%, -42%) scale(0.94);
+  transition: opacity 1600ms var(--ease-soft), transform 2200ms var(--ease-soft);
+  box-shadow: 0 0 90px rgba(232, 200, 119, 0.28);
+}
+.intro.is-lit .intro-moon { opacity: 0.22; transform: translate(-50%, -50%) scale(1); }
+
+.intro-lines {
+  position: relative;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 0 1.5rem;
+}
+.intro-line {
+  grid-area: 1 / 1;
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color: var(--cream);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 900ms var(--ease), transform 900ms var(--ease);
+}
+.intro-line.is-in { opacity: 1; transform: translateY(0); }
+
+.intro-skip {
+  position: absolute;
+  right: clamp(1rem, 4vw, 2.5rem);
+  bottom: clamp(1rem, 4vh, 2.5rem);
+  padding: 0.5rem 1rem;
+  font-size: var(--step--1);
+  letter-spacing: 0.16em;
+  text-transform: lowercase;
+  color: var(--fg-ghost);
+  border-radius: 999px;
+  transition: color var(--t-fast) var(--ease);
+}
+.intro-skip:hover { color: var(--gold); }
+
+/* ---- the way back ------------------------------------------------------- */
+
+.backlink {
+  position: fixed;
+  top: clamp(0.9rem, 2.6vh, 1.8rem);
+  left: var(--pad-page);
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.9rem 0.45rem 0.55rem;
+  border-radius: 999px;
+  font-size: var(--step--1);
+  letter-spacing: 0.05em;
+  color: var(--fg-faint);
+  text-decoration: none;
+  background: rgba(7, 10, 28, 0.35);
+  border: 1px solid transparent;
+  backdrop-filter: blur(6px);
+  transition: color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease);
+}
+.backlink:hover { color: var(--gold-bright); border-color: var(--line-soft); }
+.backlink-moon svg {
+  width: 1.1rem; height: 1.1rem;
+  fill: none; stroke: currentColor; stroke-width: 1.5;
+  transition: transform var(--t-mid) var(--ease);
+}
+.backlink:hover .backlink-moon svg { transform: rotate(-12deg); }
+[data-room="letter"] .backlink { color: rgba(244, 236, 217, 0.55); }
+
+/* ---- mini player -------------------------------------------------------- */
+
+.miniplayer {
+  position: fixed;
+  z-index: 70;
+  left: 50%;
+  bottom: calc(1.1rem + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  width: min(26rem, calc(100vw - 2rem));
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-lg);
+  background: rgba(7, 10, 28, 0.88);
+  box-shadow: var(--shadow-lift);
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  animation: mini-in var(--t-mid) var(--ease) both;
+}
+@keyframes mini-in {
+  from { opacity: 0; transform: translate(-50%, 12px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.mini-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.65rem;
+}
+.mini-mark {
+  display: grid;
+  place-items: center;
+  width: 1.9rem; height: 1.9rem;
+  color: var(--gold);
+  opacity: 0.5;
+  transition: opacity var(--t-mid) var(--ease), filter var(--t-mid) var(--ease);
+}
+.miniplayer.is-playing .mini-mark {
+  opacity: 1;
+  filter: drop-shadow(0 0 6px rgba(232, 200, 119, 0.5));
+}
+
+.mini-open {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  text-align: left;
+  padding: 0.25rem 0.2rem;
+  border-radius: var(--radius);
+}
+.mini-number {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--gold);
+  opacity: 0.75;
+  flex: none;
+}
+.mini-title {
+  font-size: var(--step--1);
+  color: var(--fg-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mini-open:hover .mini-title { color: var(--gold-bright); }
+.mini-controls { display: flex; gap: 0.15rem; flex: none; }
+.mini-btn { width: 2.4rem; height: 2.4rem; }
+.mini-btn .ico { width: 1.05rem; height: 1.05rem; }
+
+.mini-bar {
+  display: block;
+  height: 2px;
+  background: rgba(232, 200, 119, 0.14);
+}
+.mini-bar__fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-deep), var(--gold-bright));
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 260ms linear;
+}
+
+@media (max-width: 640px) {
+  .miniplayer {
+    left: 0; right: 0; bottom: 0;
+    width: auto;
+    transform: none;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    border-bottom: 0;
+    padding-bottom: env(safe-area-inset-bottom);
+    animation: mini-in-mobile var(--t-mid) var(--ease) both;
+  }
+  @keyframes mini-in-mobile {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .mini-btn { width: 2.9rem; height: 2.9rem; }
+}
+
+/* ---- the note ----------------------------------------------------------- */
+
+.note-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: grid;
+  place-items: center;
+  padding: var(--pad-page);
+  background: rgba(4, 6, 15, 0.72);
+  opacity: 0;
+  transition: opacity var(--t-mid) var(--ease);
+  overflow-y: auto;
+}
+.note-veil.is-in { opacity: 1; }
+
+.note-sheet {
+  position: relative;
+  width: min(34rem, 100%);
+  margin: auto;
+  padding: clamp(2rem, 5vw, 3.2rem);
+  border-radius: 2px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent 30%),
+    var(--paper);
+  color: #3c3227;
+  box-shadow: var(--shadow-paper);
+  transform: translateY(12px) rotate(-0.25deg);
+  transition: transform var(--t-mid) var(--ease);
+}
+.note-veil.is-in .note-sheet { transform: translateY(0) rotate(-0.25deg); }
+
+.note-eyebrow {
+  font-size: var(--step--1);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #8a6a3a;
+  margin-bottom: 1.4rem;
+}
+.note-body p {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  line-height: 1.55;
+  color: #3c3227;
+}
+.note-gap { display: block; height: 0.85rem; }
+.note-ornament { display: block; margin: 1.6rem auto 0; }
+.note-ornament path { stroke: #b08a4d; }
+.note-ornament circle { fill: #b08a4d; }
+.note-close {
+  position: absolute;
+  top: 0.6rem; right: 0.6rem;
+  color: #8a6a3a;
+}
+.note-close:hover { color: #3c3227; background: rgba(0, 0, 0, 0.05); border-color: rgba(0, 0, 0, 0.12); }
+
+/* ---- lightbox (used by the board) --------------------------------------- */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: grid;
+  place-items: center;
+  padding: var(--pad-page);
+  background: rgba(4, 6, 15, 0.86);
+  opacity: 0;
+  transition: opacity var(--t-mid) var(--ease);
+}
+.lightbox.is-in { opacity: 1; }
+.lightbox-frame { position: relative; max-width: min(56rem, 100%); }
+.lightbox-figure img {
+  max-height: 78svh;
+  width: auto;
+  border-radius: 2px;
+  box-shadow: var(--shadow-paper);
+}
+.lightbox-figure figcaption {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.9rem;
+  font-size: var(--step--1);
+  color: var(--fg-soft);
+}
+.lightbox-close { position: absolute; top: -3rem; right: -0.4rem; color: var(--fg-soft); }

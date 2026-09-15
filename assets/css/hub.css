@@ -1,0 +1,237 @@
+/* ============================================================================
+   hub.css — the night, and the five places in it.
+
+   Above 900px the destinations sit where they sit in the sky, joined by one
+   faint thread so they read as a single constellation rather than five loose
+   buttons. Below that the same list becomes a column with the thread running
+   down its left edge: the same idea, re-composed for a thumb, not a shrunken
+   copy of the wide layout.
+   ========================================================================== */
+
+.hub {
+  position: relative;
+  max-width: 78rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2rem, 6vh, 4rem);
+  min-height: calc(100svh - 12rem);
+}
+
+.hub-head {
+  text-align: center;
+  display: grid;
+  gap: 0.7rem;
+  justify-items: center;
+}
+.hub-title {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: var(--step-4);
+  line-height: 1.08;
+  letter-spacing: 0.005em;
+  max-width: 16ch;
+  color: var(--cream);
+}
+.hub-sub {
+  font-size: var(--step-0);
+  color: var(--fg-faint);
+  max-width: 34ch;
+}
+
+/* ---- the field ---------------------------------------------------------- */
+
+.field {
+  position: relative;
+  flex: 1;
+  min-height: clamp(20rem, 46vh, 30rem);
+}
+
+.field-moon {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: clamp(16rem, 34vw, 30rem);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 46% 44%,
+    rgba(251, 232, 184, 0.13) 0%,
+    rgba(232, 200, 119, 0.07) 34%,
+    rgba(232, 200, 119, 0.025) 56%,
+    transparent 78%);
+  filter: blur(26px);
+  animation: moon-breathe 11s ease-in-out infinite;
+}
+@keyframes moon-breathe {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+.threads-wrap { position: absolute; inset: 0; }
+.threads {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.threads polyline {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.32;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 2 3;
+}
+
+.spots { position: absolute; inset: 0; }
+.spots-item { position: absolute; inset: 0; pointer-events: none; }
+
+.spot {
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  width: 11rem;
+  display: grid;
+  justify-items: center;
+  gap: 0.55rem;
+  padding: 0.9rem 0.6rem 1rem;
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  color: var(--fg-soft);
+  transition: color var(--t-mid) var(--ease), transform var(--t-mid) var(--ease);
+  animation: spot-in 900ms var(--ease) both;
+  animation-delay: calc(var(--i) * 110ms + 120ms);
+}
+@keyframes spot-in {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 10px)); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+.spot-star {
+  position: absolute;
+  top: -0.35rem;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--gold-bright);
+  opacity: 0.4;
+  box-shadow: 0 0 0 0 rgba(251, 232, 184, 0.4);
+  transition: opacity var(--t-mid) var(--ease), box-shadow var(--t-mid) var(--ease);
+}
+
+.spot-glyph {
+  width: 3.4rem;
+  height: 3.4rem;
+  color: var(--gold);
+  opacity: 0.75;
+  transition: opacity var(--t-mid) var(--ease),
+              transform var(--t-mid) var(--ease),
+              filter var(--t-mid) var(--ease);
+}
+
+.spot-label { display: grid; gap: 0.25rem; text-align: center; }
+.spot-title {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  letter-spacing: 0.04em;
+  color: var(--cream);
+}
+.spot-note {
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--fg-faint);
+  opacity: 0;
+  transform: translateY(-3px);
+  transition: opacity var(--t-mid) var(--ease), transform var(--t-mid) var(--ease);
+}
+
+.spot:hover, .spot:focus-visible { color: var(--gold-bright); }
+.spot:hover .spot-glyph,
+.spot:focus-visible .spot-glyph {
+  opacity: 1;
+  transform: translateY(-2px);
+  filter: drop-shadow(0 0 10px rgba(232, 200, 119, 0.35));
+}
+.spot:hover .spot-star,
+.spot:focus-visible .spot-star {
+  opacity: 1;
+  box-shadow: 0 0 10px 2px rgba(251, 232, 184, 0.45);
+}
+.spot:hover .spot-note,
+.spot:focus-visible .spot-note { opacity: 1; transform: translateY(0); }
+
+/* the board has nothing pinned to it yet, and says so quietly */
+.spot.is-dormant .spot-glyph { opacity: 0.4; }
+.spot.is-dormant .spot-title { color: var(--fg-soft); }
+.spot.is-dormant:hover .spot-glyph,
+.spot.is-dormant:focus-visible .spot-glyph { opacity: 0.8; }
+
+.hub-foot { display: flex; justify-content: center; }
+
+/* ---- narrow: one thread, top to bottom ---------------------------------- */
+
+@media (max-width: 900px) {
+  .hub { gap: 1.6rem; }
+  .hub-title { max-width: 14ch; font-size: var(--step-3); }
+  .hub-sub { font-size: var(--step--1); }
+
+  .field { min-height: 0; padding-left: 0.6rem; }
+  .hub { min-height: 0; }
+  .field-moon {
+    position: relative;
+    top: auto; left: auto;
+    transform: none;
+    margin: 0 auto 0.4rem;
+    width: min(6.5rem, 26vw);
+    filter: blur(14px);
+  }
+  .threads-wrap { display: none; }
+
+  .spots {
+    position: relative;
+    inset: auto;
+    display: grid;
+    gap: 0.2rem;
+  }
+  .spots::before {
+    content: '';
+    position: absolute;
+    top: 1.4rem; bottom: 1.4rem;
+    left: 1.7rem;
+    width: 1px;
+    background: linear-gradient(180deg, transparent, var(--line), transparent);
+  }
+  .spots-item { position: static; pointer-events: auto; }
+
+  .spot {
+    position: static;
+    transform: none;
+    width: 100%;
+    grid-template-columns: 3.4rem 1fr;
+    justify-items: start;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.6rem 0.5rem;
+    animation: spot-in-list 700ms var(--ease) both;
+    animation-delay: calc(var(--i) * 70ms + 80ms);
+  }
+  @keyframes spot-in-list {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .spot-star { display: none; }
+  .spot-glyph {
+    width: 2.4rem; height: 2.4rem;
+    padding: 0.45rem;
+    border: 1px solid var(--line-soft);
+    border-radius: 50%;
+    background: rgba(7, 10, 28, 0.85);
+  }
+  .spot-label { text-align: left; }
+  .spot-note { opacity: 1; transform: none; }
+  .spot:active { background: rgba(232, 200, 119, 0.05); }
+}
